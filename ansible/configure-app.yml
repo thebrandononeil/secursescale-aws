@@ -1,0 +1,38 @@
+---
+- name: Configure SecureScale application servers
+  hosts: aws_ec2
+  gather_facts: false
+
+  tasks:
+    - name: Ensure nginx is installed
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: true
+      become: true
+
+    - name: Deploy SecureScale application page
+      ansible.builtin.copy:
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>SecureScale</title>
+          </head>
+          <body>
+            <h1>SecureScale</h1>
+            <h2>Secure AWS Infrastructure Platform</h2>
+            <p>Configured and managed with Ansible.</p>
+            <p>Infrastructure provisioned with Terraform.</p>
+          </body>
+          </html>
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: "0644"
+      become: true
+      
+    - name: Verify Ansible can manage the server
+      ansible.builtin.command: hostname
+      register: hostname_result
+      changed_when: false
